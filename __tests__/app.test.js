@@ -2,7 +2,8 @@ const request = require('supertest');
 const app = require('../app');
 const db = require('../db/connection.js');
 const seed = require('../db/seeds/seed');
-const data = require('../db/data/test-data/index')
+const data = require('../db/data/test-data/index');
+const { RowDescriptionMessage } = require('pg-protocol/dist/messages');
 
 afterAll( () => {
     return db.end();
@@ -34,7 +35,7 @@ describe("GET: /api/topics", () => {
 })
 
 describe.only("GET: /api/articles/:article_id", () => {
-    describe("Happy path", () => {
+    describe("HAPPY path", () => {
         it("Status 200: responds with an article object which has the following properties:author which is the username from the users table, title, articel_id, body, topic, created_at, votes.", () => {
             return request(app)
                 .get('/api/articles/1')
@@ -55,6 +56,16 @@ describe.only("GET: /api/articles/:article_id", () => {
                             votes: expect.any(Number),
                         })
                     )
+                })
+        })
+    });
+    describe("SAD Path", () => {
+        it("Status 400: responds with a 400 and an appropriate message when a bad enpoint is provided", () => {
+            return request(app)
+                .get('/api/articles/banana')
+                .expect(400)
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Invalid input");
                 })
         })
     })

@@ -7,24 +7,15 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getArticleById = (req, res, next) => {
-    fetchArticlesById(req.params).then(({rows : [article] } )=> {
+    fetchArticlesById(req.params)
+    .then(({rows : [article] } )=> {
         res.status(200).send({ article  })
     })
+    .catch(next)
 }
 
 
 /*
-Responds with:
-
-an article object, which should have the following properties:
-
-author which is the username from the users table
-title
-article_id
-body
-topic
-created_at
-votes
 
 */
 
