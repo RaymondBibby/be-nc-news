@@ -8,15 +8,10 @@ exports.getTopics = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
     fetchArticlesById(req.params)
-    .then(({rows : [article] } )=> {
+    .then((article )=> {
         res.status(200).send({ article  })
     })
     .catch(next)
 }
 
 
-/*
-
-*/
-
-/////ERROR HANDLING BLOCK///////

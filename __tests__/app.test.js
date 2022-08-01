@@ -34,7 +34,7 @@ describe("GET: /api/topics", () => {
     }) 
 })
 
-describe.only("GET: /api/articles/:article_id", () => {
+describe("GET: /api/articles/:article_id", () => {
     describe("HAPPY path", () => {
         it("Status 200: responds with an article object which has the following properties:author which is the username from the users table, title, articel_id, body, topic, created_at, votes.", () => {
             return request(app)
@@ -42,7 +42,6 @@ describe.only("GET: /api/articles/:article_id", () => {
                 .expect(200)
                 .then(( {body} ) => {
                     const { article } = body
-                    // console.log("testsuite", article)
                     expect(article).toBeInstanceOf(Object);
 
                     expect(article).toEqual(
@@ -66,6 +65,14 @@ describe.only("GET: /api/articles/:article_id", () => {
                 .expect(400)
                 .then(( {body} )=> {
                     expect(body.msg).toBe("Invalid input");
+                })
+        });
+        it("Status 404: responds with a 404 and an appropriate message when a valid endpoint is provided but the resource doesn't exist", () => {
+            return request(app)
+                .get('/api/articles/1000')
+                .expect(404)
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("No article found for article_id 1000");
                 })
         })
     })
