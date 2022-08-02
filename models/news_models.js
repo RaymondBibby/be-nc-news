@@ -19,3 +19,33 @@ exports.fetchArticlesById = ( {article_id} ) => {
         return article;
     })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.fetchUsers = async () => {
+    const result = await db.query(
+        'SELECT * FROM users'
+    )
+    return result.rows
+}

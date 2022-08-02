@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticlesById } = require("../models/news_models")
+const { fetchTopics, fetchArticlesById, fetchUsers } = require("../models/news_models")
 
 exports.getTopics = (req, res, next) => {
    fetchTopics().then(( {rows : topics} ) => {
@@ -19,3 +19,27 @@ exports.catchAll = (req, res, next) => {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.getUsers = (req, res, next) => {
+
+    fetchUsers()
+    .then((users) => {
+        res.status(200).send( {users} )
+    })
+    .catch(next);
+}
