@@ -59,7 +59,7 @@ describe("GET: /api/articles/:article_id", () => {
         })
     });
     describe("SAD Path", () => {
-        it("Status 400: responds with a 400 and an appropriate message when a bad enpoint is provided", () => {
+        it("Status 400: responds with a 400 and an appropriate message when a bad end point is provided", () => {
             return request(app)
                 .get('/api/articles/banana')
                 .expect(400)
@@ -67,7 +67,7 @@ describe("GET: /api/articles/:article_id", () => {
                     expect(body.msg).toBe("Invalid input");
                 })
         });
-        it("Status 404: responds with a 404 and an appropriate message when a valid endpoint is provided but the resource doesn't exist", () => {
+        it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
             return request(app)
                 .get('/api/articles/1000')
                 .expect(404)
@@ -79,12 +79,92 @@ describe("GET: /api/articles/:article_id", () => {
 })
 
 describe("ALL: /api/:any_unknown_endpoint", () => {
-    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid enfd point is provided.", () => {
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid end point is provided.", () => {
         return request(app)
             .get('/api/load_of_rubbish123')
             .expect(400)
             .then((  {body} )=> {
                 expect(body.msg).toBe("Invalid input, no such end point exists");
             })
+    })
+})
+
+describe("PATCH: /api/articles/:article_id", () => {
+    describe("HAPPY path", () => {
+        it("Status 200: responds with a 200 to indicate that the patch was succesful and responds with the updated article.", () => {
+            const incVotes = {
+                inc_votes : 100
+            };
+            return request(app)
+                .patch('/api/articles/2')
+                .send(incVotes)
+                .expect(200)
+                .then(( {body} ) => {
+                    const { article } = body
+                    expect(article).toBeInstanceOf(Object);
+
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            article_id: expect.any(Number),
+                            author: expect.any(String),
+                            title: expect.any(String),
+                            topic: expect.any(String),
+                            body: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                        })
+                    )
+                    expect(article.votes).toBe(100)
+                })
+        });
+    })
+    describe("SAD path", () => {
+        it("Status 400: responds with a 400 and an appropriate message when a bad end point is provided", () => {
+            const incVotes = {
+                inc_votes : 100
+            };
+            return request(app)
+                .patch('/api/articles/banana')
+                .send(incVotes)
+                .expect(400) 
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Invalid input");
+                })
+        })
+        it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable", () => {
+            const incVotes = {
+                inc_votes : "banana"
+            };
+            return request(app)
+                .patch('/api/articles/1')
+                .send(incVotes)
+                .expect(400) 
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Invalid input");
+                })
+        })
+        it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body does not contain a required field", () => {
+            const incVotes = {};
+
+            return request(app)
+                .patch('/api/articles/1')
+                .send(incVotes)
+                .expect(400) 
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Missing column value violating non-null constraint");
+                })
+        })
+        it("Status 404: responds with a 404 and an appropriate message when a valid enp point is provided but the resource doesn't exist", () => {
+            const incVotes = {
+                inc_votes : 100
+            };
+            return request(app)
+                .patch('/api/articles/1000')
+                .send(incVotes)
+                .expect(404)
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("No article found for article_id 1000, patch unsuccessful");
+                })
+        })
     })
 })
