@@ -167,4 +167,44 @@ describe("PATCH: /api/articles/:article_id", () => {
                 })
         })
     })
+
+})
+
+describe("GET: /api/users", () => {
+    it("Status 200: responds with an array of user objects, each of which have the following properties: 'username', 'name' and 'avatar_url'. ", () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(( {body} ) => {
+                const { users } = body
+                expect(users).toBeInstanceOf(Array);
+                expect(users.length).toBe(4)
+                
+               users.forEach((user) => {
+                    expect(user).toEqual(
+                        expect.objectContaining({
+                            username: expect.any(String),
+                           name: expect.any(String),
+                           avatar_url: expect.any(String)
+                      })
+                    )
+                })
+            })
+    })
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling", () => {
+        return request(app)
+            .get('/api/userrs')
+            .expect(400)
+            .then((  {body} )=> {
+                expect(body.msg).toBe("Invalid input, no such end point exists");
+            })
+    })
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid end point is provided, e.g., /api/", () => {
+        return request(app)
+            .get('/api/users/load_of_bull/Utter_rubbish')
+            .expect(400)
+            .then((  {body} )=> {
+                expect(body.msg).toBe("Invalid input, no such end point exists");
+            })
+    })  
 })

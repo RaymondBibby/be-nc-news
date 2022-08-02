@@ -7,6 +7,7 @@ const {
     getTopics, 
     getArticleById,
     catchAll,
+    getUsers, 
     patchArticleById, 
 } 
 = require('./controller/news_controller.js');
@@ -15,7 +16,9 @@ app.get('/api/topics', getTopics);
 
 app.get('/api/articles/:article_id', getArticleById);
 
-app.patch('/api/articles/:article_id', patchArticleById)
+app.patch('/api/articles/:article_id', patchArticleById);
+
+app.get('/api/users', getUsers);
 
 app.all('/api/*',catchAll);
 

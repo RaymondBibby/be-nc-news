@@ -1,4 +1,5 @@
-const { fetchTopics, fetchArticlesById, updateArticleById } = require("../models/news_models");
+
+const { fetchTopics, fetchArticlesById, updateArticleById, fetchUsers } = require("../models/news_models");
 const { checkIndexExists } = require("./controller.utils");
 
 exports.getTopics = (req, res, next) => {
@@ -30,3 +31,27 @@ exports.patchArticleById = (req, res, next) => {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.getUsers = (req, res, next) => {
+
+    fetchUsers()
+    .then((users) => {
+        res.status(200).send( {users} )
+    })
+    .catch(next);
+}
