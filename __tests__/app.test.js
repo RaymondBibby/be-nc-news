@@ -131,7 +131,7 @@ describe("PATCH: /api/articles/:article_id", () => {
                     expect(body.msg).toBe("Invalid input");
                 })
         })
-        it.only("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable", () => {
+        it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable", () => {
             const incVotes = {
                 inc_votes : "banana"
             };
