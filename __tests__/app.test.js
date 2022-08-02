@@ -143,6 +143,17 @@ describe("PATCH: /api/articles/:article_id", () => {
                     expect(body.msg).toBe("Invalid input");
                 })
         })
+        it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body does not contain a required field", () => {
+            const incVotes = {};
+
+            return request(app)
+                .patch('/api/articles/1')
+                .send(incVotes)
+                .expect(400) 
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Missing column value violating non-null constraint");
+                })
+        })
         it("Status 404: responds with a 404 and an appropriate message when a valid enp point is provided but the resource doesn't exist", () => {
             const incVotes = {
                 inc_votes : 100
