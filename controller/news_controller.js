@@ -1,4 +1,4 @@
-const { fetchTopics } = require("../models/news_models")
+const { fetchTopics, fetchArticlesById } = require("../models/news_models")
 
 exports.getTopics = (req, res, next) => {
    fetchTopics().then(( {rows : topics} ) => {
@@ -6,5 +6,16 @@ exports.getTopics = (req, res, next) => {
    })
 }
 
+exports.getArticleById = (req, res, next) => {
+    fetchArticlesById(req.params)
+    .then((article )=> {
+        res.status(200).send({ article  })
+    })
+    .catch(next)
+}
 
-/////ERROR HANDLING BLOCK///////
+exports.catchAll = (req, res, next) => {
+    res.status(400).send({msg : "Invalid input, no such end point exists"})
+}
+
+
