@@ -1,4 +1,5 @@
-const { fetchTopics, fetchArticlesById, updateArticleById } = require("../models/news_models")
+const { fetchTopics, fetchArticlesById, updateArticleById } = require("../models/news_models");
+const { checkIndexExists } = require("./controller.utils");
 
 exports.getTopics = (req, res, next) => {
    fetchTopics().then(( {rows : topics} ) => {
@@ -19,9 +20,11 @@ exports.catchAll = (req, res, next) => {
 }
 
 exports.patchArticleById = (req, res, next) => {
-    updateArticleById(req.params, req.body)
-    .then(( [article] ) => {
-        res.status(200).send( { article } )
+    const { article_id } = req.params
+
+    Promise.all([updateArticleById(req.params, req.body), checkIndexExists(article_id)])
+    .then(([[article]])=> {
+        res.status(200).send( {article} )
     })
     .catch(next)
 }

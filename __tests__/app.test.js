@@ -131,5 +131,17 @@ describe("PATCH: /api/articles/:article_id", () => {
                     expect(body.msg).toBe("Invalid input");
                 })
         })
+        it("Status 404: responds with a 404 and an appropriate message when a valid enp point is provided but the resource doesn't exist", () => {
+            const incVotes = {
+                inc_votes : 100
+            };
+            return request(app)
+                .patch('/api/articles/1000')
+                .send(incVotes)
+                .expect(404)
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("No article found for article_id 1000, patch unsuccessful");
+                })
+        })
     })
 })
