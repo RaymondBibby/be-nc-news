@@ -16,7 +16,6 @@ exports.fetchArticlesById = ( {article_id} ) => {
                 msg : `No article found for article_id ${article_id}`
             })
         }
-        console.log(article)
         return article;
     })
 }

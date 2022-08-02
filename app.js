@@ -3,13 +3,16 @@ const app = express();
 
 const { 
     getTopics, 
-    getArticleById, 
+    getArticleById,
+    catchAll, 
 } 
 = require('./controller/news_controller.js');
 
 app.get('/api/topics', getTopics);
 
-app.get('/api/articles/:article_id', getArticleById)
+app.get('/api/articles/:article_id', getArticleById);
+
+app.all('/api/*',catchAll);
 
 
 

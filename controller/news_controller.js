@@ -14,4 +14,8 @@ exports.getArticleById = (req, res, next) => {
     .catch(next)
 }
 
+exports.catchAll = (req, res, next) => {
+    res.status(400).send({msg : "Invalid input, no such end point exists"})
+}
+
 

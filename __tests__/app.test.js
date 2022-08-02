@@ -78,3 +78,13 @@ describe("GET: /api/articles/:article_id", () => {
     })
 })
 
+describe("ALL: /api/:any_unknown_endpoint", () => {
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid enfd point is provided.", () => {
+        return request(app)
+            .get('/api/load_of_rubbish123')
+            .expect(400)
+            .then((  {body} )=> {
+                expect(body.msg).toBe("Invalid input, no such end point exists");
+            })
+    })
+})
