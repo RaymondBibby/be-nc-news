@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json())
+
 const { 
     getTopics, 
     getArticleById,
-    catchAll, 
+    catchAll,
+    patchArticleById, 
 } 
 = require('./controller/news_controller.js');
 
@@ -12,11 +15,10 @@ app.get('/api/topics', getTopics);
 
 app.get('/api/articles/:article_id', getArticleById);
 
+app.patch('/api/articles/:article_id', patchArticleById)
+
 app.all('/api/*',catchAll);
 
-
-
-//app.all('/api/*', handleCatchAllError)
 
 /////ERROR HANDLING BLOCK///////
 app.use((err, req, res, next) => {
