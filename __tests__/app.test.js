@@ -116,6 +116,20 @@ describe("PATCH: /api/articles/:article_id", () => {
                     )
                     expect(article.votes).toBe(100)
                 })
+        });
+    })
+    describe("SAD path", () => {
+        it("Status 400: responds with a 400 and an appropriate message when a bad end point is provided", () => {
+            const incVotes = {
+                inc_votes : 100
+            };
+            return request(app)
+                .patch('/api/articles/banana')
+                .send(incVotes)
+                .expect(400) 
+                .then(( {body} )=> {
+                    expect(body.msg).toBe("Invalid input");
+                })
         })
     })
 })
