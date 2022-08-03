@@ -43,6 +43,7 @@ describe("GET: /api/articles/:article_id", () => {
                 .then(( {body} ) => {
                     const { article } = body
                     expect(article).toBeInstanceOf(Object);
+                    expect(article.comment_count).toBe("11")
 
                     expect(article).toEqual(
                         expect.objectContaining({
@@ -53,6 +54,7 @@ describe("GET: /api/articles/:article_id", () => {
                             body: expect.any(String),
                             created_at: expect.any(String),
                             votes: expect.any(Number),
+                            comment_count: expect.any(String),
                         })
                     )
                 })

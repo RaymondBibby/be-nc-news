@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const { getArticlesByIdForComment, getCommentCount } = require('./models.utils')
 
 exports.fetchTopics = () => {
     return db.query('SELECT * FROM topics')
@@ -6,16 +7,13 @@ exports.fetchTopics = () => {
 }
 
 exports.fetchArticlesById = ( {article_id} ) => {
-    return db
-    .query('SELECT * FROM articles WHERE article_id=$1;', [article_id])
-    .then(( {rows} ) => {
-        const article = rows[0];
-        if(!article) {
-            return Promise.reject({
-                status: 404,
-                msg : `No article found for article_id ${article_id}`
-            })
-        }
+    
+    return Promise.all( [getArticlesByIdForComment(article_id), getCommentCount(article_id) ]
+    ).then(( [articleById, commentCount] ) => {
+        
+        const { comment_count } = commentCount
+        const article = articleById
+        article.comment_count =comment_count
         return article;
     })
 }
