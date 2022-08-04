@@ -240,7 +240,7 @@ describe('GET: /api/articles', () => {
 	});
 });
 
-describe('GET: /api/articles:article_id/comments', () => {
+describe('GET: /api/articles/:article_id/comments', () => {
 	describe('HAPPPY  path', () => {
 		it('responds with an array of comment objects with the following properties: comment _id, votes, created_at, author and body', () => {
 			return request(app)
@@ -289,6 +289,14 @@ describe('GET: /api/articles:article_id/comments', () => {
 				.expect(404)
 				.then(({ body }) => {
 					expect(body.msg).toBe('Invalid input, no such end point exists');
+				});
+		});
+		it('Status 404: resposnds with a 404 and an appropriate message when a valid end point is provided, but when no comments exist for the article', () => {
+			return request(app)
+				.get('/api/articles/2/comments')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('No comments exist for this article');
 				});
 		});
 	});

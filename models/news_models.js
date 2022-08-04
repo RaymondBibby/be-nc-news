@@ -6,6 +6,8 @@ const {
 	getAllArticles,
 	createRefTable,
 	updateArticles,
+	fetchCommentByArticle_Id,
+	checkArticleIdExists,
 } = require('./models.utils');
 
 exports.fetchTopics = () => {
@@ -58,16 +60,24 @@ exports.fetchArticles = () => {
 	);
 };
 
-exports.fetchCommentsByArticleId = async ({ article_id }) => {
-	const result = await db.query('SELECT * FROM comments WHERE article_id=$1', [
-		article_id,
-	]);
+exports.fetchCommentsByArticleId = ({ article_id }) => {
+	return Promise.all([
+		getCommentCount(article_id),
+		fetchCommentByArticle_Id(article_id),
+		checkArticleIdExists(article_id),
+	]).then(([commentCount, articleById, exists]) => {
+		if (!exists.length) {
+			return Promise.reject({
+				status: 404,
+				msg: `No article found for article_id ${article_id}`,
+			});
+		} else if (articleById.length == 0 && commentCount.comment_count == 0) {
+			return Promise.reject({
+				status: 404,
+				msg: 'No comments exist for this article',
+			});
+		}
 
-	if (result.rows.length === 0) {
-		return Promise.reject({
-			status: 404,
-			msg: `No article found for article_id ${article_id}`,
-		});
-	}
-	return result.rows;
+		return articleById;
+	});
 };
