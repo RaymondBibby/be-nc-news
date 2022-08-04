@@ -1,4 +1,5 @@
-const db = require("../db/connection");
+const db = require('../db/connection');
+const { commentData } = require('../db/data/test-data');
 const {
 	getArticlesByIdForComment,
 	getCommentCount,
@@ -6,10 +7,10 @@ const {
 	getAllArticles,
 	createRefTable,
 	updateArticles,
-} = require("./models.utils");
+} = require('./models.utils');
 
 exports.fetchTopics = () => {
-	return db.query("SELECT * FROM topics");
+	return db.query('SELECT * FROM topics');
 };
 
 exports.fetchArticlesById = ({ article_id }) => {
@@ -26,13 +27,13 @@ exports.fetchArticlesById = ({ article_id }) => {
 };
 
 exports.fetchUsers = async () => {
-	const result = await db.query("SELECT * FROM users");
+	const result = await db.query('SELECT * FROM users');
 	return result.rows;
 };
 
 exports.updateArticleById = async ({ article_id }, { inc_votes }) => {
 	const result = await db.query(
-		"UPDATE articles SET votes = votes + $1 WHERE article_id=$2 RETURNING *;",
+		'UPDATE articles SET votes = votes + $1 WHERE article_id=$2 RETURNING *;',
 		[inc_votes, article_id]
 	);
 	return result.rows;
@@ -43,17 +44,30 @@ exports.fetchArticles = () => {
 		([allArticles, allCommentCounts]) => {
 			const refObj = createRefTable(
 				allCommentCounts,
-				"article_id",
-				"comment_count"
+				'article_id',
+				'comment_count'
 			);
 			const updatedArticles = updateArticles(
 				allArticles,
 				refObj,
-				"article_id",
-				"comment_count"
+				'article_id',
+				'comment_count'
 			);
 
 			return updatedArticles;
 		}
 	);
+};
+
+exports.postUpdateCommentByArticleId = async (
+	{ article_id },
+	{ username, body }
+) => {
+	const result = await db.query(
+		'INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;',
+		[article_id, username, body]
+	);
+	const [comment] = result.rows;
+	console.log(result);
+	return comment;
 };

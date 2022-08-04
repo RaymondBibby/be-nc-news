@@ -4,8 +4,9 @@ const {
 	updateArticleById,
 	fetchUsers,
 	fetchArticles,
-} = require("../models/news_models");
-const { checkIndexExists } = require("./controller.utils");
+	postUpdateCommentByArticleId,
+} = require('../models/news_models');
+const { checkIndexExists } = require('./controller.utils');
 
 exports.getTopics = (req, res, next) => {
 	fetchTopics().then(({ rows: topics }) => {
@@ -22,7 +23,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.catchAll = (req, res, next) => {
-	res.status(404).send({ msg: "Invalid input, no such end point exists" });
+	res.status(404).send({ msg: 'Invalid input, no such end point exists' });
 };
 
 exports.patchArticleById = (req, res, next) => {
@@ -48,6 +49,14 @@ exports.getUsers = (req, res, next) => {
 	fetchUsers()
 		.then((users) => {
 			res.status(200).send({ users });
+		})
+		.catch(next);
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+	postUpdateCommentByArticleId(req.params, req.body)
+		.then((comment) => {
+			res.status(200).send({ comment });
 		})
 		.catch(next);
 };
