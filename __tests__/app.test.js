@@ -240,6 +240,107 @@ describe('GET: /api/articles', () => {
 	});
 });
 
+describe('POST: /api/articles/:article_id/comments', () => {
+	describe('HAPPY path', () => {
+		it('Status 200: responds with a 200 to indicate that the comment post was succesful and responds with the posted comment.', () => {
+			const postComment = {
+				username: 'butter_bridge',
+				body: 'Post a comment from ya boy Butter Bridge',
+			};
+			return request(app)
+				.post('/api/articles/1/comments')
+				.send(postComment)
+				.expect(200)
+				.then(({ body }) => {
+					const { comment } = body;
+					expect(comment).toBeInstanceOf(Object);
+					expect(comment.comment_id).toBe(19);
+
+					expect(comment).toEqual(
+						expect.objectContaining({
+							comment_id: expect.any(Number),
+							body: expect.any(String),
+							article_id: expect.any(Number),
+							author: expect.any(String),
+							created_at: expect.any(String),
+							votes: expect.any(Number),
+						})
+					);
+				});
+		});
+	});
+	describe('SAD path', () => {
+		it('Status 400: responds with a 400 and an appropriate message when a bad end point is provided', () => {
+			const postComment = {
+				username: 'butter_bridge',
+				body: 'Post a comment from ya boy Butter Bridge',
+			};
+			return request(app)
+				.post('/api/articles/banana/comments')
+				.send(postComment)
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it('Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable', () => {
+			const postComment = {
+				username: 'butter_bridge',
+			};
+			return request(app)
+				.post('/api/articles/1/comments')
+				.send(postComment)
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe(
+						'Missing column value violating non-null constraint'
+					);
+				});
+		});
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+			const postComment = {
+				username: 'butter_bridge',
+				body: 'Post a comment from ya boy Butter Bridge',
+			};
+			return request(app)
+				.post('/api/articles/1000/comments')
+				.send(postComment)
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe(
+						`article_id does not exist, post unsuccessful`
+					);
+				});
+		});
+		it('Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body does not contain a required field', () => {
+			const postComment = {};
+
+			return request(app)
+				.post('/api/articles/1/comments')
+				.send(postComment)
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe(
+						'Missing column value violating non-null constraint'
+					);
+				});
+		});
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+			const postComment = {
+				username: 'butter_bridge',
+				body: 'Post a comment from ya boy Butter Bridge',
+			};
+			return request(app)
+				.patch('/api/articlees/1/commeents')
+				.send(postComment)
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input, no such end point exists');
+				});
+		});
+	});
+});
+
 describe('GET: /api/articles/:article_id/comments', () => {
 	describe('HAPPPY  path', () => {
 		it('responds with an array of comment objects with the following properties: comment _id, votes, created_at, author and body', () => {
