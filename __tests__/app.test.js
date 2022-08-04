@@ -210,3 +210,46 @@ describe("GET: /api/users", () => {
             })
     })  
 })
+
+describe("GET: /api/articles", () => {
+    it("Status 200: responds with an array of article objects, each of which have the following properties: author, title, article_id, topic, created_at, votes, comment_count ", () => {
+        return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(( {body} ) => {
+                const { articles } = body
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles.length).toBe(12)
+                
+               articles.forEach((article) => {
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            author: expect.any(String),
+                           title: expect.any(String),
+                           article_id: expect.any(Number),
+                          topic: expect.any(String),
+                          created_at: expect.any(String),
+                          votes: expect.any(Number),
+                          comment_count: expect.any(String)
+                      })
+                    )
+                })
+            })
+    })
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling", () => {
+        return request(app)
+            .get('/api/articlles')
+            .expect(400)
+            .then((  {body} )=> {
+                expect(body.msg).toBe("Invalid input, no such end point exists");
+            })
+    })
+    it("Status 400: resposnds with a 400 bad request and an appropriate message when an invalid end point is provided, e.g., /api/", () => {
+        return request(app)
+            .get('/api/users/articless/Utter_rubbish')
+            .expect(400)
+            .then((  {body} )=> {
+                expect(body.msg).toBe("Invalid input, no such end point exists");
+            })
+    }) 
+})
