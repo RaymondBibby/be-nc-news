@@ -1,8 +1,8 @@
-const request = require("supertest");
-const app = require("../app");
-const db = require("../db/connection.js");
-const seed = require("../db/seeds/seed");
-const data = require("../db/data/test-data/index");
+const request = require('supertest');
+const app = require('../app');
+const db = require('../db/connection.js');
+const seed = require('../db/seeds/seed');
+const data = require('../db/data/test-data/index');
 
 afterAll(() => {
 	return db.end();
@@ -12,10 +12,10 @@ beforeEach(() => {
 	return seed(data);
 });
 
-describe("GET: /api/topics", () => {
+describe('GET: /api/topics', () => {
 	it("Status 200: responds with an array of topic objects, each of which have the following properties: 'slug' and 'decsription'. ", () => {
 		return request(app)
-			.get("/api/topics")
+			.get('/api/topics')
 			.expect(200)
 			.then(({ body }) => {
 				const { topics } = body;
@@ -33,11 +33,11 @@ describe("GET: /api/topics", () => {
 	});
 });
 
-describe("GET: /api/articles/:article_id", () => {
-	describe("HAPPY path", () => {
-		it("Status 200: responds with an article object which has the following properties:author which is the username from the users table, title, articel_id, body, topic, created_at, votes.", () => {
+describe('GET: /api/articles/:article_id', () => {
+	describe('HAPPY path', () => {
+		it('Status 200: responds with an article object which has the following properties:author which is the username from the users table, title, articel_id, body, topic, created_at, votes.', () => {
 			return request(app)
-				.get("/api/articles/1")
+				.get('/api/articles/1')
 				.expect(200)
 				.then(({ body }) => {
 					const { article } = body;
@@ -59,45 +59,45 @@ describe("GET: /api/articles/:article_id", () => {
 				});
 		});
 	});
-	describe("SAD Path", () => {
-		it("Status 400: responds with a 400 and an appropriate message when a bad end point is provided", () => {
+	describe('SAD Path', () => {
+		it('Status 400: responds with a 400 and an appropriate message when a bad end point is provided', () => {
 			return request(app)
-				.get("/api/articles/banana")
+				.get('/api/articles/banana')
 				.expect(400)
 				.then(({ body }) => {
-					expect(body.msg).toBe("Invalid input");
+					expect(body.msg).toBe('Invalid input');
 				});
 		});
 		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
 			return request(app)
-				.get("/api/articles/1000")
+				.get('/api/articles/1000')
 				.expect(404)
 				.then(({ body }) => {
-					expect(body.msg).toBe("No article found for article_id 1000");
+					expect(body.msg).toBe('No article found for article_id 1000');
 				});
 		});
 	});
 });
 
-describe("ALL: /api/:any_unknown_endpoint", () => {
-	it("Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided.", () => {
+describe('ALL: /api/:any_unknown_endpoint', () => {
+	it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided.', () => {
 		return request(app)
-			.get("/api/load_of_rubbish123")
+			.get('/api/load_of_rubbish123')
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe("Invalid input, no such end point exists");
+				expect(body.msg).toBe('Invalid input, no such end point exists');
 			});
 	});
 });
 
-describe("PATCH: /api/articles/:article_id", () => {
-	describe("HAPPY path", () => {
-		it("Status 200: responds with a 200 to indicate that the patch was succesful and responds with the updated article.", () => {
+describe('PATCH: /api/articles/:article_id', () => {
+	describe('HAPPY path', () => {
+		it('Status 200: responds with a 200 to indicate that the patch was succesful and responds with the updated article.', () => {
 			const incVotes = {
 				inc_votes: 100,
 			};
 			return request(app)
-				.patch("/api/articles/2")
+				.patch('/api/articles/2')
 				.send(incVotes)
 				.expect(200)
 				.then(({ body }) => {
@@ -119,29 +119,29 @@ describe("PATCH: /api/articles/:article_id", () => {
 				});
 		});
 	});
-	describe("SAD path", () => {
-		it("Status 400: responds with a 400 and an appropriate message when a bad end point is provided", () => {
+	describe('SAD path', () => {
+		it('Status 400: responds with a 400 and an appropriate message when a bad end point is provided', () => {
 			const incVotes = {
 				inc_votes: 100,
 			};
 			return request(app)
-				.patch("/api/articles/banana")
+				.patch('/api/articles/banana')
 				.send(incVotes)
 				.expect(400)
 				.then(({ body }) => {
-					expect(body.msg).toBe("Invalid input");
+					expect(body.msg).toBe('Invalid input');
 				});
 		});
-		it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable", () => {
+		it('Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body is unacceptable', () => {
 			const incVotes = {
-				inc_votes: "banana",
+				inc_votes: 'banana',
 			};
 			return request(app)
-				.patch("/api/articles/1")
+				.patch('/api/articles/1')
 				.send(incVotes)
 				.expect(400)
 				.then(({ body }) => {
-					expect(body.msg).toBe("Invalid input");
+					expect(body.msg).toBe('Invalid input');
 				});
 		});
 		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
@@ -149,35 +149,35 @@ describe("PATCH: /api/articles/:article_id", () => {
 				inc_votes: 100,
 			};
 			return request(app)
-				.patch("/api/articles/1000")
+				.patch('/api/articles/1000')
 				.send(incVotes)
 				.expect(404)
 				.then(({ body }) => {
 					expect(body.msg).toBe(
-						"No article found for article_id 1000, patch unsuccessful"
+						'No article found for article_id 1000, patch unsuccessful'
 					);
 				});
 		});
-		it("Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body does not contain a required field", () => {
+		it('Status 400: responds with a 400 and an appropriate message when a valid end point is provided, but the body does not contain a required field', () => {
 			const incVotes = {};
 
 			return request(app)
-				.patch("/api/articles/1")
+				.patch('/api/articles/1')
 				.send(incVotes)
 				.expect(400)
 				.then(({ body }) => {
 					expect(body.msg).toBe(
-						"Missing column value violating non-null constraint"
+						'Missing column value violating non-null constraint'
 					);
 				});
 		});
 	});
 });
 
-describe("GET: /api/users", () => {
+describe('GET: /api/users', () => {
 	it("Status 200: responds with an array of user objects, each of which have the following properties: 'username', 'name' and 'avatar_url'. ", () => {
 		return request(app)
-			.get("/api/users")
+			.get('/api/users')
 			.expect(200)
 			.then(({ body }) => {
 				const { users } = body;
@@ -195,20 +195,20 @@ describe("GET: /api/users", () => {
 				});
 			});
 	});
-	it("Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling", () => {
+	it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling', () => {
 		return request(app)
-			.get("/api/userrs")
+			.get('/api/userrs')
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe("Invalid input, no such end point exists");
+				expect(body.msg).toBe('Invalid input, no such end point exists');
 			});
 	});
 });
 
-describe("GET: /api/articles", () => {
-	it("Status 200: responds with an array of article objects, each of which have the following properties: author, title, article_id, topic, created_at, votes, comment_count ", () => {
+describe('GET: /api/articles', () => {
+	it('Status 200: responds with an array of article objects, each of which have the following properties: author, title, article_id, topic, created_at, votes, comment_count ', () => {
 		return request(app)
-			.get("/api/articles")
+			.get('/api/articles')
 			.expect(200)
 			.then(({ body }) => {
 				const { articles } = body;
@@ -230,12 +230,58 @@ describe("GET: /api/articles", () => {
 				});
 			});
 	});
-	it("Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling", () => {
+	it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling', () => {
 		return request(app)
-			.get("/api/articlles")
+			.get('/api/articlles')
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe("Invalid input, no such end point exists");
+				expect(body.msg).toBe('Invalid input, no such end point exists');
 			});
+	});
+});
+
+describe('GET: /api/articles:article_id/comments', () => {
+	describe('HAPPPY  path', () => {
+		it('responds with an array of comment objects with the following properties: comment _id, votes, created_at, author and body', () => {
+			return request(app)
+				.get('/api/articles/3/comments')
+				.expect(200)
+				.then(({ body }) => {
+					const { comments } = body;
+					expect(comments).toBeInstanceOf(Array);
+					expect(comments.length).toBe(2);
+
+					comments.forEach((comment) => {
+						expect(comment).toEqual(
+							expect.objectContaining({
+								article_id: expect.any(Number),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								comment_id: expect.any(Number),
+								author: expect.any(String),
+								body: expect.any(String),
+							})
+						);
+					});
+				});
+		});
+	});
+	describe('SAD Path', () => {
+		it('Status 400: responds with a 404 and an appropriate message when a bad end point is provided', () => {
+			return request(app)
+				.get('/api/articles/banana/comments')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+			return request(app)
+				.get('/api/articles/999/comments')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('No article found for article_id 999');
+				});
+		});
 	});
 });
