@@ -1,9 +1,9 @@
-const db = require("../db/connection");
-const articles = require("../db/data/test-data/articles");
+const db = require('../db/connection');
+const articles = require('../db/data/test-data/articles');
 
 exports.getCommentCount = async (article_id) => {
 	const dbresult = await db.query(
-		"SELECT COUNT(articles.article_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id=$1;",
+		'SELECT COUNT(articles.article_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id=$1;',
 		[article_id]
 	);
 
@@ -13,7 +13,7 @@ exports.getCommentCount = async (article_id) => {
 
 exports.getArticlesByIdForComment = async (article_id) => {
 	const dbresult = await db.query(
-		"SELECT * FROM articles WHERE article_id=$1;",
+		'SELECT * FROM articles WHERE article_id=$1;',
 		[article_id]
 	);
 	const [article] = dbresult.rows;
@@ -30,7 +30,7 @@ exports.getArticlesByIdForComment = async (article_id) => {
 
 exports.getCommentCountAllArticles = async () => {
 	const dbresult = await db.query(
-		"SELECT articles.article_id, COUNT(*) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id;"
+		'SELECT articles.article_id, COUNT(*) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id;'
 	);
 
 	const { rows: comments } = dbresult;
@@ -38,7 +38,7 @@ exports.getCommentCountAllArticles = async () => {
 };
 
 exports.getAllArticles = async () => {
-	const dbresult = await db.query("SELECT * FROM articles");
+	const dbresult = await db.query('SELECT * FROM articles');
 	const { rows: articles } = dbresult;
 	return articles;
 };
@@ -71,4 +71,23 @@ exports.updateArticles = (
 		return article;
 	});
 	return arrayToReturn;
+};
+
+exports.fetchCommentByArticle_Id = async (article_id) => {
+	const result = await db.query(
+		'SELECT * FROM comments WHERE article_id=$1;',
+		[article_id]
+	);
+	const article = result.rows;
+
+	return article;
+};
+
+exports.checkArticleIdExists = async (article_id) => {
+	const result = await db.query(
+		'SELECT * FROM articles WHERE article_id=$1;',
+		[article_id]
+	);
+	const returnVal = result.rows;
+	return returnVal;
 };

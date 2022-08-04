@@ -11,6 +11,8 @@ const {
 	patchArticleById,
 	getArticles,
 	postCommentByArticleId,
+	getCommentsByArticleId,
+
 } = require('./controller/news_controller.js');
 
 app.get('/api/topics', getTopics);
@@ -23,13 +25,14 @@ app.get('/api/users', getUsers);
 
 app.get('/api/articles', getArticles);
 
-app.post('/api/articles/:article_id/comments', postCommentByArticleId);
+app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
 app.all('/api/*', catchAll);
 
-/////ERROR HANDLING BLOCK///////
+// Error handling block
+
 app.use((err, req, res, next) => {
-	// console.log('Entering Error handling block', err);
+	console.log('Entering Error handling block', err);
 	if (err.status && err.msg) {
 		res.status(err.status).send({ msg: err.msg });
 	} else next(err);
