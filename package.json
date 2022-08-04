@@ -8,7 +8,7 @@
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
     "prepare": "husky install",
-    "sql-look": "psql -f ./output.sql"
+    "sql-look": "psql -f ./output.sql > ./output.txt"
   },
   "repository": {
     "type": "git",

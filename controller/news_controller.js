@@ -22,7 +22,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.catchAll = (req, res, next) => {
-	res.status(400).send({ msg: "Invalid input, no such end point exists" });
+	res.status(404).send({ msg: "Invalid input, no such end point exists" });
 };
 
 exports.patchArticleById = (req, res, next) => {
