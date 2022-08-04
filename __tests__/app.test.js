@@ -340,3 +340,65 @@ describe('POST: /api/articles/:article_id/comments', () => {
 		});
 	});
 });
+
+describe('GET: /api/articles/:article_id/comments', () => {
+	describe('HAPPPY  path', () => {
+		it('responds with an array of comment objects with the following properties: comment _id, votes, created_at, author and body', () => {
+			return request(app)
+				.get('/api/articles/3/comments')
+				.expect(200)
+				.then(({ body }) => {
+					const { comments } = body;
+					expect(comments).toBeInstanceOf(Array);
+					expect(comments.length).toBe(2);
+
+					comments.forEach((comment) => {
+						expect(comment).toEqual(
+							expect.objectContaining({
+								article_id: expect.any(Number),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								comment_id: expect.any(Number),
+								author: expect.any(String),
+								body: expect.any(String),
+							})
+						);
+					});
+				});
+		});
+	});
+	describe('SAD Path', () => {
+		it('Status 400: responds with a 400 and an appropriate message when a bad end point is provided', () => {
+			return request(app)
+				.get('/api/articles/banana/comments')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+			return request(app)
+				.get('/api/articles/999/comments')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('No article found for article_id 999');
+				});
+		});
+		it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling', () => {
+			return request(app)
+				.get('/api/articlles/1/comments')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input, no such end point exists');
+				});
+		});
+		it('Status 404: resposnds with a 404 and an appropriate message when a valid end point is provided, but when no comments exist for the article', () => {
+			return request(app)
+				.get('/api/articles/2/comments')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('No comments exist for this article');
+				});
+		});
+	});
+});

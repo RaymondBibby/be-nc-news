@@ -5,6 +5,7 @@ const {
 	fetchUsers,
 	fetchArticles,
 	postUpdateCommentByArticleId,
+	fetchCommentsByArticleId,
 } = require('../models/news_models');
 const { checkIndexExists } = require('./controller.utils');
 
@@ -57,6 +58,14 @@ exports.postCommentByArticleId = (req, res, next) => {
 	postUpdateCommentByArticleId(req.params, req.body)
 		.then((comment) => {
 			res.status(200).send({ comment });
+		})
+		.catch(next);
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+	fetchCommentsByArticleId(req.params)
+		.then((comments) => {
+			res.status(200).send({ comments });
 		})
 		.catch(next);
 };
