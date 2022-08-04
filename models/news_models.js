@@ -1,4 +1,4 @@
-const db = require("../db/connection");
+const db = require('../db/connection');
 const {
 	getArticlesByIdForComment,
 	getCommentCount,
@@ -6,10 +6,12 @@ const {
 	getAllArticles,
 	createRefTable,
 	updateArticles,
-} = require("./models.utils");
+	fetchCommentByArticle_Id,
+	checkArticleIdExists,
+} = require('./models.utils');
 
 exports.fetchTopics = () => {
-	return db.query("SELECT * FROM topics");
+	return db.query('SELECT * FROM topics');
 };
 
 exports.fetchArticlesById = ({ article_id }) => {
@@ -26,13 +28,13 @@ exports.fetchArticlesById = ({ article_id }) => {
 };
 
 exports.fetchUsers = async () => {
-	const result = await db.query("SELECT * FROM users");
+	const result = await db.query('SELECT * FROM users');
 	return result.rows;
 };
 
 exports.updateArticleById = async ({ article_id }, { inc_votes }) => {
 	const result = await db.query(
-		"UPDATE articles SET votes = votes + $1 WHERE article_id=$2 RETURNING *;",
+		'UPDATE articles SET votes = votes + $1 WHERE article_id=$2 RETURNING *;',
 		[inc_votes, article_id]
 	);
 	return result.rows;
@@ -43,17 +45,39 @@ exports.fetchArticles = () => {
 		([allArticles, allCommentCounts]) => {
 			const refObj = createRefTable(
 				allCommentCounts,
-				"article_id",
-				"comment_count"
+				'article_id',
+				'comment_count'
 			);
 			const updatedArticles = updateArticles(
 				allArticles,
 				refObj,
-				"article_id",
-				"comment_count"
+				'article_id',
+				'comment_count'
 			);
 
 			return updatedArticles;
 		}
 	);
+};
+
+exports.fetchCommentsByArticleId = ({ article_id }) => {
+	return Promise.all([
+		getCommentCount(article_id),
+		fetchCommentByArticle_Id(article_id),
+		checkArticleIdExists(article_id),
+	]).then(([commentCount, articleById, exists]) => {
+		if (!exists.length) {
+			return Promise.reject({
+				status: 404,
+				msg: `No article found for article_id ${article_id}`,
+			});
+		} else if (articleById.length == 0 && commentCount.comment_count == 0) {
+			return Promise.reject({
+				status: 404,
+				msg: 'No comments exist for this article',
+			});
+		}
+
+		return articleById;
+	});
 };
