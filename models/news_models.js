@@ -55,12 +55,12 @@ exports.fetchArticles = (sort_by) => {
 				article.comment_count = parseInt(article.comment_count);
 				return article;
 			});
-
+			console.log(articles);
 			return articles;
 		});
 };
 
-exports.fetchArticleBy_Sort_OrderBy = async (sortBy = 'created_at', order) => {
+exports.fetchArticleBy_Sort_OrderBy = (sortBy = 'created_at', order) => {
 	const safeOrderValues = ['asc', 'desc'];
 	const safeQueryValues = [
 		'title',
@@ -71,38 +71,60 @@ exports.fetchArticleBy_Sort_OrderBy = async (sortBy = 'created_at', order) => {
 		'article_id',
 		'comment_count',
 	];
+	let err = false;
 
 	let queryStr =
 		'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ';
 
-	safeQueryValues.forEach((value) => {
+	safeQueryValues.forEach((value, index) => {
 		if (value === sortBy) {
 			queryStr += `ORDER BY ${sortBy} `;
+		} else if (
+			index === safeQueryValues.length - 1 &&
+			order !== sortBy &&
+			queryStr ===
+				'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id '
+		) {
+			err = true;
 		}
 	});
+	let queryStr2 = queryStr;
 
-	safeOrderValues.forEach((value) => {
+	safeOrderValues.forEach((value, index) => {
+		console.log(value, order);
 		if (value === order) {
 			if (order === 'asc') {
 				queryStr += 'ASC';
 			} else {
 				queryStr += 'DESC';
 			}
+		} else if (
+			index === safeOrderValues.length - 1 &&
+			value !== order &&
+			queryStr === queryStr2
+		) {
+			err = true;
 		}
 	});
 
-	const result = await db.query(queryStr);
-	const articles = result.rows;
+	return db.query(queryStr).then(({ rows: articles }) => {
+		if (err === true) {
+			return Promise.reject({
+				status: 400,
+				msg: 'Invalid input',
+			});
+		}
 
-	articles.map((article) => {
-		article.comment_count = parseInt(article.comment_count);
-		return article;
+		articles.map((article) => {
+			article.comment_count = parseInt(article.comment_count);
+			return article;
+		});
+
+		return articles;
 	});
-
-	return articles;
 };
 
-exports.fetchArticlesByQuerySortBy = async (sortBy = 'created_at') => {
+exports.fetchArticlesByQuerySortBy = (sortBy = 'created_at') => {
 	const safeQueryValues = [
 		'title',
 		'topic',
@@ -112,26 +134,38 @@ exports.fetchArticlesByQuerySortBy = async (sortBy = 'created_at') => {
 		'article_id',
 		'comment_count',
 	];
+	let err = false;
 
 	let queryStr =
 		'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ';
 
-	safeQueryValues.forEach((value) => {
+	safeQueryValues.forEach((value, index) => {
 		if (value === sortBy) {
 			queryStr += `ORDER BY ${sortBy} ASC `;
+		} else if (
+			index === safeQueryValues.length - 1 &&
+			value !== sortBy &&
+			queryStr ===
+				'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id '
+		) {
+			err = true;
 		}
 	});
 
-	const result = await db.query(queryStr);
+	return db.query(queryStr).then(({ rows: articles }) => {
+		if (err === true) {
+			return Promise.reject({
+				status: 400,
+				msg: 'Invalid input',
+			});
+		}
+		articles.map((article) => {
+			article.comment_count = parseInt(article.comment_count);
+			return article;
+		});
 
-	const articles = result.rows;
-
-	articles.map((article) => {
-		article.comment_count = parseInt(article.comment_count);
-		return article;
+		return articles;
 	});
-
-	return articles;
 };
 
 exports.fetchArticlesByQuerySortByDesc = async (sortBy = 'created_at') => {
@@ -145,25 +179,38 @@ exports.fetchArticlesByQuerySortByDesc = async (sortBy = 'created_at') => {
 		'comment_count',
 	];
 
+	let err = false;
+
 	let queryStr =
 		'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ';
 
-	safeQueryValues.forEach((value) => {
+	safeQueryValues.forEach((value, index) => {
 		if (value === sortBy) {
 			queryStr += `ORDER BY ${sortBy} DESC `;
+		} else if (
+			index === safeQueryValues.length - 1 &&
+			value !== sortBy &&
+			queryStr ===
+				'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id '
+		) {
+			err = true;
 		}
 	});
 
-	const result = await db.query(queryStr);
+	return db.query(queryStr).then(({ rows: articles }) => {
+		if (err === true) {
+			return Promise.reject({
+				status: 400,
+				msg: 'Invalid input',
+			});
+		}
+		articles.map((article) => {
+			article.comment_count = parseInt(article.comment_count);
+			return article;
+		});
 
-	const articles = result.rows;
-
-	articles.map((article) => {
-		article.comment_count = parseInt(article.comment_count);
-		return article;
+		return articles;
 	});
-
-	return articles;
 };
 
 exports.postUpdateCommentByArticleId = async (
@@ -199,18 +246,24 @@ exports.fetchCommentsByArticleId = ({ article_id }) => {
 	});
 };
 
-exports.fetchCommentsByTopic = async (topic) => {
-	const result = await db.query(
-		'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.topic=$1 GROUP BY articles.article_id ;',
-		[topic]
-	);
+exports.fetchCommentsByTopic = (topic) => {
+	return db
+		.query(
+			'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.topic=$1 GROUP BY articles.article_id ;',
+			[topic]
+		)
+		.then(({ rows: articles }) => {
+			if (!articles.length) {
+				return Promise.reject({
+					status: 400,
+					msg: 'Invalid input',
+				});
+			}
+			articles.map((article) => {
+				article.comment_count = parseInt(article.comment_count);
+				return article;
+			});
 
-	const articles = result.rows;
-
-	articles.map((article) => {
-		article.comment_count = parseInt(article.comment_count);
-		return article;
-	});
-
-	return articles;
+			return articles;
+		});
 };

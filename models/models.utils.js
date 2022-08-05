@@ -46,19 +46,3 @@ exports.checkArticleIdExists = async (article_id) => {
 	const returnVal = result.rows;
 	return returnVal;
 };
-
-// exports.fetchArticlesByQuerySortBy = async (sortBy) => {
-// 	const queryValues = [];
-// 	let queryStr =
-// 		'SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ';
-
-// 	if (sortBy === 'title') {
-// 		queryValues.push('articles.title;');
-// 		queryStr += `ORDER BY ${sort_by};`;
-
-// 		console.log(queryStr, queryValues);
-// 		const result = await db.query(`${queryStr}`, queryValues);
-// 		console.log(result.rows);
-// 		return result;
-// 	}
-// };

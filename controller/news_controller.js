@@ -49,10 +49,11 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
 	const { sort_by, order, topic } = req.query;
+	console.log(req.query, 'req.query');
 
-	if (!req.query) {
+	if (Object.keys(req.query).length === 0) {
 		fetchArticles().then((articles) => {
-			res.status.send({ articles });
+			res.status(200).send({ articles });
 		});
 	} else if (topic) {
 		fetchCommentsByTopic(topic)
@@ -61,25 +62,45 @@ exports.getArticles = (req, res, next) => {
 			})
 			.catch(next);
 	} else if (!req.query.order && req.query.sort_by) {
-		fetchArticlesByQuerySortBy(sort_by).then((articles) => {
-			res.status(200).send({ articles });
-		});
+		fetchArticlesByQuerySortBy(sort_by)
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
 	} else if (!req.query.sort_by && !req.query.order && !sort_by === '') {
-		fetchArticlesByQuerySortByAsc('created_at').then((articles) => {
-			res.status(200).send({ articles });
-		});
+		fetchArticlesByQuerySortByAsc('created_at')
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
 	} else if (!req.query.sort_by && req.query.order) {
-		fetchArticleBy_Sort_OrderBy('created_at', order).then((articles) => {
-			res.status(200).send({ articles });
-		});
+		console.log('here');
+		fetchArticleBy_Sort_OrderBy('created_at', order)
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
 	} else if (!req.query.sort_by && req.query.sort_by === undefined) {
-		fetchArticlesByQuerySortByDesc('created_at').then((articles) => {
-			res.status(200).send({ articles });
-		});
+		let input = 'banana';
+		if (
+			req.query.hasOwnProperty('sort_by') ||
+			req.query.hasOwnProperty('order') ||
+			req.query.hasOwnProperty('owner')
+		) {
+			input = 'created_at';
+		}
+
+		fetchArticlesByQuerySortByDesc(input)
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
 	} else {
-		fetchArticlesByQuerySortBy('created_at').then((articles) => {
-			res.status(200).send({ articles });
-		});
+		fetchArticlesByQuerySortBy('created_at')
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
 	}
 };
 

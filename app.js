@@ -33,7 +33,7 @@ app.all('/api/*', catchAll);
 // Error handling block
 
 app.use((err, req, res, next) => {
-	// console.log('Entering Error handling block', err);
+	console.log('Entering Error handling block');
 	if (err.status && err.msg) {
 		res.status(err.status).send({ msg: err.msg });
 	} else next(err);

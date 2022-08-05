@@ -721,14 +721,54 @@ describe('GET: /api/articles, Including QUERIES', () => {
 				});
 		});
 	});
-	// describe('SAD path', () => {
-	// 	it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling', () => {
-	// 		return request(app)
-	// 			.get('/api/articlles')
-	// 			.expect(404)
-	// 			.then(({ body }) => {
-	// 				expect(body.msg).toBe('Invalid input, no such end point exists');
-	// 			});
-	// 	});
-	// });
+	describe('SAD path', () => {
+		it('Status 404: resposnds with a 404 bad request and an appropriate message when an invalid end point is provided, e.g., misspelling', () => {
+			return request(app)
+				.get('/api/articlles')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input, no such end point exists');
+				});
+		});
+		it('Status 400: resposnds with a 400 bad request and an appropriate message when a bad sort_by query is provided', () => {
+			return request(app)
+				.get('/api/articles?sort_by=bananas')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it('Status 400: resposnds with a 400 bad request and an appropriate message when a bad sort_by query is provided', () => {
+			return request(app)
+				.get('/api/articles?sort_byy=author')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it('Status 400: resposnds with a 400 bad request and an appropriate message when a bad order query is provided', () => {
+			return request(app)
+				.get('/api/articles?order=banana')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it('Status 400: resposnds with a 400 bad request and an appropriate message when a bad order query is provided', () => {
+			return request(app)
+				.get('/api/articles?orderr=asc')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it('Status 400: resposnds with a 400 bad request and an appropriate message when a bad topic query is provided', () => {
+			return request(app)
+				.get('/api/articles?topic=banana')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+	});
 });
