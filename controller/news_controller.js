@@ -1,3 +1,4 @@
+const articles = require('../db/data/test-data/articles');
 const {
 	fetchTopics,
 	fetchArticlesById,
@@ -6,7 +7,13 @@ const {
 	fetchArticles,
 	postUpdateCommentByArticleId,
 	fetchCommentsByArticleId,
+	fetchArticlesByQuerySortBy,
+	fetchArticleBy_Sort_OrderBy,
+	fetchArticlesByQuerySortByAsc,
+	fetchArticlesByQuerySortByDesc,
+	fetchCommentsByTopic,
 } = require('../models/news_models');
+
 const { checkIndexExists } = require('./controller.utils');
 
 exports.getTopics = (req, res, next) => {
@@ -41,9 +48,39 @@ exports.patchArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-	fetchArticles().then((articles) => {
-		res.status(200).send({ articles });
-	});
+	const { sort_by, order, topic } = req.query;
+
+	if (!req.query) {
+		fetchArticles().then((articles) => {
+			res.status.send({ articles });
+		});
+	} else if (topic) {
+		fetchCommentsByTopic(topic)
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
+	} else if (!req.query.order && req.query.sort_by) {
+		fetchArticlesByQuerySortBy(sort_by).then((articles) => {
+			res.status(200).send({ articles });
+		});
+	} else if (!req.query.sort_by && !req.query.order && !sort_by === '') {
+		fetchArticlesByQuerySortByAsc('created_at').then((articles) => {
+			res.status(200).send({ articles });
+		});
+	} else if (!req.query.sort_by && req.query.order) {
+		fetchArticleBy_Sort_OrderBy('created_at', order).then((articles) => {
+			res.status(200).send({ articles });
+		});
+	} else if (!req.query.sort_by && req.query.sort_by === undefined) {
+		fetchArticlesByQuerySortByDesc('created_at').then((articles) => {
+			res.status(200).send({ articles });
+		});
+	} else {
+		fetchArticlesByQuerySortBy('created_at').then((articles) => {
+			res.status(200).send({ articles });
+		});
+	}
 };
 
 exports.getUsers = (req, res, next) => {
