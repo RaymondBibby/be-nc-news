@@ -175,7 +175,6 @@ exports.postUpdateCommentByArticleId = async (
 		[article_id, username, body]
 	);
 	const [comment] = result.rows;
-	console.log(result);
 	return comment;
 };
 
