@@ -10,18 +10,76 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
+    "description": "serves up an an array of articles complete with information on: author, title, article_id, topic, time stamp and comment count",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
-      "articles": [
+      "articles": 
         {
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": 1527695953341,
+          "comment_count" : 150
+        }
+    }
+  },
+  "GET /api/:article_id": {
+    "description": "serves up an article object complete with information on: author, title, article_id, topic, time stamp and comment count",
+    "exampleResponse": {
+      "article": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "comment_count": 150
         }
       ]
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the votes property on the relevant article by article_id and serves up the updated article ",
+    "request body": {"inc_votes" : "newVote"},
+    "exampleResponse": {
+      "article": 
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "comment_count" : 150
+        }
+    }
+  },
+  "GET /api/users": {
+    "description": "serves up an an array of users complete with information on: username, name, avatar_url",
+    "exampleResponse": {
+      "users": 
+      [
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a comment to the relevant article by article_id and responds with the posted comment",
+    "request body": {"username" : "rogersop", "body": "Mitch is so Lorem Ipsum"},
+    "exampleResponse": {
+      "comment": 
+      {
+				"username": "butter_bridge",
+				"body": "Post a comment from ya boy Butter Bridge"
+			}
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the given comment by comment_id and responds with no content"
+    
   }
 }

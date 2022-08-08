@@ -12,6 +12,7 @@ const {
 	fetchArticlesByQuerySortByAsc,
 	fetchArticlesByQuerySortByDesc,
 	fetchCommentsByTopic,
+	deleteCommentById,
 } = require('../models/news_models');
 
 const { checkIndexExists } = require('./controller.utils');
@@ -49,7 +50,6 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
 	const { sort_by, order, topic } = req.query;
-	console.log(req.query, 'req.query');
 
 	if (Object.keys(req.query).length === 0) {
 		fetchArticles().then((articles) => {
@@ -74,7 +74,6 @@ exports.getArticles = (req, res, next) => {
 			})
 			.catch(next);
 	} else if (!req.query.sort_by && req.query.order) {
-		console.log('here');
 		fetchArticleBy_Sort_OrderBy('created_at', order)
 			.then((articles) => {
 				res.status(200).send({ articles });
@@ -127,3 +126,105 @@ exports.getCommentsByArticleId = (req, res, next) => {
 		})
 		.catch(next);
 };
+
+exports.deleteCommentsByCommentId = (req, res, next) => {
+	deleteCommentById(req.params)
+		.then(() => {
+			res.sendStatus(204);
+		})
+		.catch(next);
+};
+
+exports.getAllApi = (req, res, next) => [
+	res.status(200).send({
+		'GET /api': {
+			description:
+				'serves up a json representation of all the available endpoints of the api',
+		},
+		'GET /api/topics': {
+			description: 'serves an array of all topics',
+			queries: [],
+			exampleResponse: {
+				topics: [{ slug: 'football', description: 'Footie!' }],
+			},
+		},
+		'GET /api/articles': {
+			description:
+				'serves up an an array of articles complete with information on: author, title, article_id, topic, time stamp and comment count',
+			queries: ['author', 'topic', 'sort_by', 'order'],
+			exampleResponse: {
+				articles: {
+					title: 'Seafood substitutions are increasing',
+					topic: 'cooking',
+					author: 'weegembump',
+					body: 'Text from the article..',
+					created_at: 1527695953341,
+					comment_count: 150,
+				},
+			},
+		},
+		'GET /api/:article_id': {
+			description:
+				'serves up an article object complete with information on: author, title, article_id, topic, time stamp and comment count',
+			exampleResponse: {
+				article: [
+					{
+						title: 'Seafood substitutions are increasing',
+						topic: 'cooking',
+						author: 'weegembump',
+						body: 'Text from the article..',
+						created_at: 1527695953341,
+						comment_count: 150,
+					},
+				],
+			},
+		},
+		'PATCH /api/articles/:article_id': {
+			description:
+				'updates the votes property on the relevant article by article_id and serves up the updated article ',
+			'request body': { inc_votes: 'newVote' },
+			exampleResponse: {
+				article: {
+					title: 'Seafood substitutions are increasing',
+					topic: 'cooking',
+					author: 'weegembump',
+					body: 'Text from the article..',
+					created_at: 1527695953341,
+					comment_count: 150,
+				},
+			},
+		},
+		'GET /api/users': {
+			description:
+				'serves up an an array of users complete with information on: username, name, avatar_url',
+			exampleResponse: {
+				users: [
+					{
+						username: 'rogersop',
+						name: 'paul',
+						avatar_url:
+							'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4',
+					},
+				],
+			},
+		},
+		'POST /api/articles/:article_id/comments': {
+			description:
+				'adds a comment to the relevant article by article_id and responds with the posted comment',
+			'request body': {
+				username: 'rogersop',
+				body: 'Mitch is so Lorem Ipsum',
+			},
+			exampleResponse: {
+				comment: {
+					username: 'butter_bridge',
+					body: 'Post a comment from ya boy Butter Bridge',
+				},
+			},
+		},
+		'DELETE /api/comments/:comment_id': {
+			description:
+				'deletes the given comment by comment_id and responds with no content',
+		},
+	}),
+];
