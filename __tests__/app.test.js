@@ -403,7 +403,6 @@ describe('GET: /api/articles/:article_id/comments', () => {
 		});
 	});
 });
-////////////////////////////////////////////////////////////////
 
 describe('GET: /api/articles, Including QUERIES', () => {
 	describe('HAPPY path- Sort_by', () => {
@@ -768,6 +767,32 @@ describe('GET: /api/articles, Including QUERIES', () => {
 				.expect(400)
 				.then(({ body }) => {
 					expect(body.msg).toBe('Invalid input');
+				});
+		});
+	});
+});
+
+describe('DELETE: /api/comments/:comment_id', () => {
+	describe('HAPPY path', () => {
+		it('should delete the given comment on comment_id, and respond with a 204 and no content ', () => {
+			return request(app).delete('/api/comments/1').expect(204);
+		});
+	});
+	describe('SAD path', () => {
+		it('Status 400: responds with a 400 and an appropriate message when a bad end point is provided', () => {
+			return request(app)
+				.delete('/api/comments/banana')
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe('Invalid input');
+				});
+		});
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+			return request(app)
+				.delete('/api/comments/1000')
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe('No comment found for comment_id 1000');
 				});
 		});
 	});
