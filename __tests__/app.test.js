@@ -243,7 +243,7 @@ describe('GET: /api/articles', () => {
 
 describe('POST: /api/articles/:article_id/comments', () => {
 	describe('HAPPY path', () => {
-		it('Status 200: responds with a 200 to indicate that the comment post was succesful and responds with the posted comment.', () => {
+		it('Status 201: responds with a 201 to indicate that the comment post was succesful and responds with the posted comment.', () => {
 			const postComment = {
 				username: 'butter_bridge',
 				body: 'Post a comment from ya boy Butter Bridge',
@@ -251,7 +251,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
 			return request(app)
 				.post('/api/articles/1/comments')
 				.send(postComment)
-				.expect(200)
+				.expect(201)
 				.then(({ body }) => {
 					const { comment } = body;
 					expect(comment).toBeInstanceOf(Object);
@@ -298,7 +298,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
 					);
 				});
 		});
-		it.only("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
 			const postComment = {
 				username: 'butter_bridge',
 				body: 'Post a comment from ya boy Butter Bridge',

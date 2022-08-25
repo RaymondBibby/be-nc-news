@@ -214,15 +214,15 @@ exports.fetchArticlesByQuerySortByDesc = async (sortBy = 'created_at') => {
 	});
 };
 
-exports.postUpdateCommentByArticleId = async (
-	{ article_id },
-	{ username, body }
-) => {
+exports.postUpdateCommentByArticleId = async (article_id, username, body) => {
+	console.log(article_id, username, body, 'In the model');
 	const result = await db.query(
-		'INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;',
+		'INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING*;',
 		[article_id, username, body]
 	);
+	console.log(result.rows, 'result.rows');
 	const [comment] = result.rows;
+
 	return comment;
 };
 

@@ -112,12 +112,19 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
-	console.log(req.params);
-	postUpdateCommentByArticleId(req.params, req.body)
+	const { body, username } = req.body;
+	const { article_id } = req.params;
+	console.log(article_id, body, username, 'controller');
+
+	postUpdateCommentByArticleId(article_id, username, body)
 		.then((comment) => {
-			res.status(200).send({ comment });
+			console.log(comment, 'commetn in the controller then block');
+			res.status(201).send({ comment });
 		})
-		.catch(next);
+		.catch((err) => {
+			console.log(err, 'error in controller');
+			next(err);
+		});
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
