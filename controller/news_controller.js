@@ -112,6 +112,7 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
+	console.log(req.params);
 	postUpdateCommentByArticleId(req.params, req.body)
 		.then((comment) => {
 			res.status(200).send({ comment });
