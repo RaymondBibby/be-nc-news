@@ -298,7 +298,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
 					);
 				});
 		});
-		it("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
+		it.only("Status 404: responds with a 404 and an appropriate message when a valid end point is provided but the resource doesn't exist", () => {
 			const postComment = {
 				username: 'butter_bridge',
 				body: 'Post a comment from ya boy Butter Bridge',
@@ -308,6 +308,7 @@ describe('POST: /api/articles/:article_id/comments', () => {
 				.send(postComment)
 				.expect(404)
 				.then(({ body }) => {
+					console.log(body, 'test suite');
 					expect(body.msg).toBe(
 						`article_id does not exist, post unsuccessful`
 					);
