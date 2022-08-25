@@ -56,7 +56,6 @@ exports.fetchArticles = (sort_by) => {
 				article.comment_count = parseInt(article.comment_count);
 				return article;
 			});
-			console.log(articles);
 			return articles;
 		});
 };
@@ -92,7 +91,6 @@ exports.fetchArticleBy_Sort_OrderBy = (sortBy = 'created_at', order) => {
 	let queryStr2 = queryStr;
 
 	safeOrderValues.forEach((value, index) => {
-		console.log(value, order);
 		if (value === order) {
 			if (order === 'asc') {
 				queryStr += 'ASC';
@@ -215,12 +213,10 @@ exports.fetchArticlesByQuerySortByDesc = async (sortBy = 'created_at') => {
 };
 
 exports.postUpdateCommentByArticleId = async (article_id, username, body) => {
-	console.log(article_id, username, body, 'In the model');
 	const result = await db.query(
 		'INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING*;',
 		[article_id, username, body]
 	);
-	console.log(result.rows, 'result.rows');
 	const [comment] = result.rows;
 
 	return comment;

@@ -308,7 +308,6 @@ describe('POST: /api/articles/:article_id/comments', () => {
 				.send(postComment)
 				.expect(404)
 				.then(({ body }) => {
-					console.log(body, 'test suite');
 					expect(body.msg).toBe(
 						`article_id does not exist, post unsuccessful`
 					);
@@ -620,6 +619,34 @@ describe('GET: /api/articles, Including QUERIES', () => {
 					expect(articles).toBeSorted({
 						key: 'created_at',
 						descending: false,
+					});
+
+					articles.forEach((article) => {
+						expect(article).toEqual(
+							expect.objectContaining({
+								author: expect.any(String),
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								comment_count: expect.any(Number),
+							})
+						);
+					});
+				});
+		});
+		it('Status 200: order, responds with an array of article objects sorted by any valid column in ASCENDING ORDER, each of which have the following properties: author, title, article_id, topic, created_at, votes, comment_count ', () => {
+			return request(app)
+				.get('/api/articles?order=desc&sort_by=author')
+				.expect(200)
+				.then(({ body }) => {
+					const { articles } = body;
+					expect(articles).toBeInstanceOf(Array);
+					expect(articles.length).toBe(12);
+					expect(articles).toBeSorted({
+						key: 'author',
+						descending: true,
 					});
 
 					articles.forEach((article) => {

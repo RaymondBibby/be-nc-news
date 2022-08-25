@@ -61,25 +61,31 @@ exports.getArticles = (req, res, next) => {
 				res.status(200).send({ articles });
 			})
 			.catch(next);
-	} else if (!req.query.order && req.query.sort_by) {
+	} else if (!order && sort_by) {
 		fetchArticlesByQuerySortBy(sort_by)
 			.then((articles) => {
 				res.status(200).send({ articles });
 			})
 			.catch(next);
-	} else if (!req.query.sort_by && !req.query.order && !sort_by === '') {
+	} else if (sort_by && order) {
+		fetchArticleBy_Sort_OrderBy(sort_by, order)
+			.then((articles) => {
+				res.status(200).send({ articles });
+			})
+			.catch(next);
+	} else if (!sort_by && !order && !sort_by === '') {
 		fetchArticlesByQuerySortByAsc('created_at')
 			.then((articles) => {
 				res.status(200).send({ articles });
 			})
 			.catch(next);
-	} else if (!req.query.sort_by && req.query.order) {
+	} else if (!sort_by && order) {
 		fetchArticleBy_Sort_OrderBy('created_at', order)
 			.then((articles) => {
 				res.status(200).send({ articles });
 			})
 			.catch(next);
-	} else if (!req.query.sort_by && req.query.sort_by === undefined) {
+	} else if (!sort_by && sort_by === undefined) {
 		let input = 'banana';
 		if (
 			req.query.hasOwnProperty('sort_by') ||
@@ -114,17 +120,12 @@ exports.getUsers = (req, res, next) => {
 exports.postCommentByArticleId = (req, res, next) => {
 	const { body, username } = req.body;
 	const { article_id } = req.params;
-	console.log(article_id, body, username, 'controller');
 
 	postUpdateCommentByArticleId(article_id, username, body)
 		.then((comment) => {
-			console.log(comment, 'commetn in the controller then block');
 			res.status(201).send({ comment });
 		})
-		.catch((err) => {
-			console.log(err, 'error in controller');
-			next(err);
-		});
+		.catch(next);
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
