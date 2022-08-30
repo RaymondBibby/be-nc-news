@@ -231,6 +231,22 @@ exports.getAllApi = (req, res, next) => [
 				},
 			},
 		},
+		'GET /api/articles/:article_id/comments': {
+			description:
+				'serves up an an array of users complete with information on: username, name, avatar_url',
+			exampleResponse: [
+				{
+					comment: {
+						article_id: 1,
+						created_at: '',
+						votes: 1,
+						comment_id: 1,
+						author: 'jessyjelly',
+						body: 'This is my first comment, oh my DAYS!!',
+					},
+				},
+			],
+		},
 		'DELETE /api/comments/:comment_id': {
 			description:
 				'deletes the given comment by comment_id and responds with no content',
