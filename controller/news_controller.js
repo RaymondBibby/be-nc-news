@@ -238,11 +238,11 @@ exports.getAllApi = (req, res, next) => [
 				{
 					comment: {
 						article_id: 1,
-						created_at: '',
+						created_at: 1600820280000,
 						votes: 1,
 						comment_id: 1,
 						author: 'jessyjelly',
-						body: 'This is my first comment, oh my DAYS!!',
+						body: 'This is my first comment, oh my DAYS!! Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio',
 					},
 				},
 			],
